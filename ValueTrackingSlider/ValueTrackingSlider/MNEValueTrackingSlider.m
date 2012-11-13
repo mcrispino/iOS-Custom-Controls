@@ -89,14 +89,14 @@
 
 #pragma mark - Private methods
 
-- (void)_constructSlider {
+- (void)constructSlider {
     valuePopupView = [[MNESliderValuePopupView alloc] initWithFrame:CGRectZero];
     valuePopupView.backgroundColor = [UIColor clearColor];
     valuePopupView.alpha = 0.0;
     [self addSubview:valuePopupView];
 }
 
-- (void)_fadePopupViewInAndOut:(BOOL)aFadeIn {
+- (void)fadePopupViewInAndOut:(BOOL)aFadeIn {
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.5];
     if (aFadeIn) {
@@ -107,7 +107,19 @@
     [UIView commitAnimations];
 }
 
-- (void)_positionAndUpdatePopupView {
+- (void)fadePopupViewIn {
+	[self fadePopupViewInAndOut:YES];
+}
+
+- (void)fadePopupViewOut {
+	[self fadePopupViewInAndOut:NO];
+}
+
+- (void)fadePopupViewOutAfterDelay {
+	[self performSelector:@selector(fadePopupViewOut) withObject:nil afterDelay:(NSTimeInterval)2.0];
+}
+
+- (void)positionAndUpdatePopupView {
     CGRect _thumbRect = self.thumbRect;
     CGRect popupRect = CGRectOffset(_thumbRect, 0, -floorf(_thumbRect.size.height * 1.5));
     valuePopupView.frame = CGRectInset(popupRect, -20, -10);
@@ -119,7 +131,7 @@
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        [self _constructSlider];
+        [self constructSlider];
     }
     return self;
 }
@@ -127,7 +139,7 @@
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self _constructSlider];
+        [self constructSlider];
     }
     return self;
 }
@@ -139,25 +151,25 @@
     CGPoint touchPoint = [touch locationInView:self];
     // Check if the knob is touched. Only in this case show the popup-view
     if(CGRectContainsPoint(CGRectInset(self.thumbRect, -12.0, -12.0), touchPoint)) {
-        [self _positionAndUpdatePopupView];
-        [self _fadePopupViewInAndOut:YES]; 
+        [self positionAndUpdatePopupView];
+        [self fadePopupViewIn];
     }
     return [super beginTrackingWithTouch:touch withEvent:event];
 }
 
 - (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event {
     // Update the popup view as slider knob is being moved
-    [self _positionAndUpdatePopupView];
+    [self positionAndUpdatePopupView];
     return [super continueTrackingWithTouch:touch withEvent:event];
 }
 
 - (void)cancelTrackingWithEvent:(UIEvent *)event {
-    [super cancelTrackingWithEvent:event];
+   [super cancelTrackingWithEvent:event];
 }
 
 - (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event {
     // Fade out the popoup view
-    [self _fadePopupViewInAndOut:NO];
+		[self fadePopupViewOut];
     [super endTrackingWithTouch:touch withEvent:event];
 }
 
