@@ -14,6 +14,8 @@
 @property (nonatomic) float value;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, strong) NSString *text;
+@property (nonatomic, strong) UIColor *foreColor;
+@property (nonatomic, strong) UIColor *fillColor;
 @end
 
 @implementation MNESliderValuePopupView
@@ -21,11 +23,15 @@
 @synthesize value=_value;
 @synthesize font=_font;
 @synthesize text = _text;
+@synthesize foreColor = _foreColor;
+@synthesize fillColor = _fillColor;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         self.font = [UIFont boldSystemFontOfSize:18];
+		self.foreColor = [UIColor colorWithWhite:1 alpha:0.8];
+		self.fillColor = [UIColor colorWithWhite:0 alpha:0.8];
     }
     return self;
 }
@@ -33,7 +39,7 @@
 - (void)drawRect:(CGRect)rect {
     
     // Set the fill color
-	[[UIColor colorWithWhite:0 alpha:0.8] setFill];
+	[self.fillColor setFill];
 
     // Create the path for the rounded rectangle
     CGRect roundedRect = CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, floorf(self.bounds.size.height * 0.8));
@@ -55,7 +61,7 @@
 
     // Draw the text
     if (self.text) {
-        [[UIColor colorWithWhite:1 alpha:0.8] set];
+        [self.foreColor set];
         CGSize s = [_text sizeWithFont:self.font];
         CGFloat yOffset = (roundedRect.size.height - s.height) / 2;
         CGRect textRect = CGRectMake(roundedRect.origin.x, yOffset, roundedRect.size.width, s.height);
