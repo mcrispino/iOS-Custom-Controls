@@ -83,7 +83,9 @@
 
 #pragma mark - MNEValueTrackingSlider implementations
 
-@implementation MNEValueTrackingSlider
+@implementation MNEValueTrackingSlider {
+	BOOL _trackingMove;
+}
 
 @synthesize thumbRect;
 
@@ -148,6 +150,7 @@
 
 - (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event {
     // Fade in and update the popup view
+	_trackingMove = NO;
     CGPoint touchPoint = [touch locationInView:self];
     // Check if the knob is touched. Only in this case show the popup-view
     if(CGRectContainsPoint(CGRectInset(self.thumbRect, -12.0, -12.0), touchPoint)) {
@@ -159,17 +162,23 @@
 
 - (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event {
     // Update the popup view as slider knob is being moved
+	_trackingMove = YES;
     [self positionAndUpdatePopupView];
     return [super continueTrackingWithTouch:touch withEvent:event];
 }
 
 - (void)cancelTrackingWithEvent:(UIEvent *)event {
+	_trackingMove = NO;
    [super cancelTrackingWithEvent:event];
 }
 
 - (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event {
     // Fade out the popoup view
+	if (_trackingMove)
 		[self fadePopupViewOut];
+	else
+		[self fadePopupViewOutAfterDelay];
+	_trackingMove = NO;
     [super endTrackingWithTouch:touch withEvent:event];
 }
 
