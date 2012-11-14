@@ -11,7 +11,6 @@
 #pragma mark - Private UIView subclass rendering the popup showing slider value
 
 @interface MNESliderValuePopupView : UIView  
-@property (nonatomic) float value;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, strong) NSString *text;
 @property (nonatomic, strong) UIColor *foreColor;
@@ -20,7 +19,6 @@
 
 @implementation MNESliderValuePopupView
 
-@synthesize value=_value;
 @synthesize font=_font;
 @synthesize text = _text;
 @synthesize foreColor = _foreColor;
@@ -73,10 +71,9 @@
     }
 }
 
-- (void)setValue:(float)aValue {
-    _value = aValue;
-    self.text = [NSString stringWithFormat:@"%4.2f", _value];
-    [self setNeedsDisplay];
+- (void)setText:(NSString *)text {
+	_text = text;
+	[self setNeedsDisplay];
 }
 
 @end
@@ -88,6 +85,7 @@
 }
 
 @synthesize thumbRect;
+@synthesize delegate;
 
 #pragma mark - Private methods
 
@@ -126,7 +124,18 @@
     CGRect _thumbRect = self.thumbRect;
     CGRect popupRect = CGRectOffset(_thumbRect, 0, -floorf(_thumbRect.size.height * 1.5));
     valuePopupView.frame = CGRectInset(popupRect, -16, -8);
-    valuePopupView.value = (NSInteger)self.value;
+	
+	float value = self.value;
+	if ([self.delegate respondsToSelector:@selector(slider:convertValue:)]) {
+		value = [self.delegate slider:self convertValue:value];
+	}
+	
+	if ([self.delegate respondsToSelector:@selector(slider:descriptionForValue:)]) {
+		valuePopupView.text = [self.delegate slider:self descriptionForValue:value];
+	}
+	else {
+		valuePopupView.text = [NSString stringWithFormat:@"%4.2f", value];
+	}
 }
 
 #pragma mark - Memory management
