@@ -102,6 +102,7 @@
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.5];
     if (aFadeIn) {
+		[[self class] cancelPreviousPerformRequestsWithTarget:self selector:@selector(fadePopupViewOut) object:nil];
         valuePopupView.alpha = 1.0;
     } else {
         valuePopupView.alpha = 0.0;
@@ -168,8 +169,9 @@
 }
 
 - (void)cancelTrackingWithEvent:(UIEvent *)event {
+	[self fadePopupViewOut];
 	_trackingMove = NO;
-   [super cancelTrackingWithEvent:event];
+	[super cancelTrackingWithEvent:event];
 }
 
 - (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event {
